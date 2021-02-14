@@ -1,0 +1,1 @@
+Toutes les miniatures des playlists dans le dossier Miniatures

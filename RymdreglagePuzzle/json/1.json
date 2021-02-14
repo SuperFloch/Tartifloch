@@ -1,0 +1,39 @@
+{
+    "id": "1",
+    "name": "Ambient Meditation Massage Music",
+    "number": "9180763832",
+    "snakeCode": "GFED",
+    "picture": {
+        "hat": "0",
+        "eye": "0",
+        "human": "0",
+        "mouth": "_"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}

@@ -1,0 +1,29 @@
+.col{
+	display:inline-block;
+	vertical-align:top;
+}
+.col-70{
+	width:70%;
+}
+.col-30{
+	width:29.5%;
+}
+.col-20{
+	width:19.5%;
+}
+.col-50{
+	width:49.5%;
+}
+img{
+	max-width:100%;
+}
+
+.form{
+	margin:3%;
+}
+.form label{
+	display:block;
+}
+.form input{
+	width:100%;
+}

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>CrypzzleSolver</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+		
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<script src="editor.js"></script>
+		<div>
+			<div class="col col-70">
+				<h1>Cryppzle Solver 2000</h1>
+				<select id="playlistSelect">
+					<option value="Kedall">[Selectionnez un numéro de playlist]</option>
+				</select>
+				
+				<div id="formulaire">
+				
+					<div class="formBlock col col-30">
+						<h2>General information</h2>
+						<div class="form">
+							<label for="number">Number</label>
+							<input type="text" id="number">
+						</div>
+						<div class="form">
+							<label for="name">Name</label>
+							<input type="text" id="name">
+						</div>
+						<div class="form">
+							<label for="snakeCode">SnakeCode</label>
+							<input type="text" id="snakeCode">
+						</div>
+					</div>
+					
+					<div id="pictureForm" class="formBlock col col-30">
+						<h2>Picture</h2>
+						<div class="form">
+							<label for="hatSelect">Hat</label>
+							<select id="hatSelect">
+								<option value="0">None</option>
+								<option value="1">Top Hat</option>
+								<option value="2">Red Hat</option>
+								<option value="4">Green Hat</option>
+								<option value="8">Large Brown Furr Hat</option>
+								<option value="16">Small Furr Hat</option>
+								<option value="32">Red Cap</option>
+								<option value="64">Strange Black Hat</option>
+							</select>
+						</div>
+						
+						<div class="form">
+							<label for="eyeSelect">Eyes</label>
+							<select id="eyeSelect">
+								<option value="0">Hidden Eyes</option>
+								<option value="1">Visible Eyes</option>
+							</select>
+						</div>
+						
+						<div class="form">
+							<label for="humanSelect">Guy</label>
+							<select id="humanSelect">
+								<option value="0">Blue clothes guy</option>
+								<option value="1">Orange clothes guy</option>
+							</select>
+						</div>
+						
+						<div class="form">
+							<label for="mouthSelect">Mouth</label>
+							<select id="mouthSelect">
+								<option value="_">Smiling</option>
+								<option value=".">Neutral</option>
+								<option value="/">Open</option>
+							</select>
+						</div>
+					</div>
+					
+					<div class="formBlock col col-30">
+						<h2>gridCode</h2>
+						<div id="gridForm">
+							<div class="form">
+								<label for="gridColorSelect">Grid Color</label>
+								<select id="gridColorSelect">
+									<option value="grey">Grey</option>
+									<option value="green">Green</option>
+									<option value="yellow">Yellow</option>
+									<option value="cyan">Cyan</option>
+									<option value="white">White</option>
+								</select>
+							</div>
+							<table id="gridCode">
+							</table>
+						</div>
+					</div>
+					
+					<div id="colorForm">
+					</div>
+				</div>
+				
+				<button id="saveButton">Sauvegarder</button>
+				
+				
+				
+			</div>
+			<div id="infos" class="col col-30">
+				<div id="image">
+					<img id="miniaturePlaylist">
+				</div>
+			</div>
+		</div>
+		<div id="aide">
+			<h3>Référence</h3>
+			<div class="col col-20">
+				<img src="miniatureJsonNaming.jpg">
+			</div>
+			<div class="col col-30">
+				<img src="referenceSignes.jpg">
+			</div>
+			<div class="col col-50">
+				<img src="pictureRef.jpg">
+			</div>
+		</div>
+		
+		
+		
+	</body>
+</html>
