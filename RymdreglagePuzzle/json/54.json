@@ -1,1 +1,40 @@
-{}
+{
+    "id": "54",
+    "name": "Ambient Meditation Creating Arts Music",
+    "number": "0744623799",
+    "snakeCode": "EOJFJ",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "1",
+        "eye": "1",
+        "human": "1",
+        "mouth": "/"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ],
+        [
+            false,
+            true,
+            true,
+            true
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ]
+    ],
+    "gridColor": "white"
+}

@@ -1,1 +1,40 @@
-{}
+{
+    "id": "43",
+    "name": "Background Chill Music",
+    "number": "4252257719",
+    "snakeCode": "PDH",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "0",
+        "eye": "1",
+        "human": "1",
+        "mouth": "/"
+    },
+    "gridCode": [
+        [
+            false,
+            true,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "cyan"
+}

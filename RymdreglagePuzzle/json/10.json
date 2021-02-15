@@ -1,1 +1,40 @@
-{}
+{
+    "id": "10",
+    "name": "Instrumental Gaming Music",
+    "number": "0633217518",
+    "snakeCode": "NIB",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "32",
+        "eye": "1",
+        "human": "1",
+        "mouth": "."
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            true,
+            true,
+            true
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}

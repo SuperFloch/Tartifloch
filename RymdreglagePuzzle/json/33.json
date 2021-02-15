@@ -1,1 +1,40 @@
-{}
+{
+    "id": "33",
+    "name": "Chill Ambient Stress Relief Music",
+    "number": "6723585020",
+    "snakeCode": "RIJFB",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "0",
+        "eye": "0",
+        "human": "0",
+        "mouth": "."
+    },
+    "gridCode": [
+        [
+            true,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "cyan"
+}

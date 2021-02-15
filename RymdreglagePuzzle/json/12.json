@@ -1,1 +1,40 @@
-{}
+{
+    "id": "12",
+    "name": "Ambient Study Music",
+    "number": "6456596116",
+    "snakeCode": "LIGDG",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "2",
+        "eye": "0",
+        "human": "0",
+        "mouth": "_"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            true,
+            true,
+            true
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}

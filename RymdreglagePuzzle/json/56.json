@@ -1,1 +1,40 @@
-{}
+{
+    "id": "56",
+    "name": "Atmospheric Meditation Soundscape Music",
+    "number": "7723554710",
+    "snakeCode": "LIGD",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "1",
+        "eye": "0",
+        "human": "0",
+        "mouth": "_"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ],
+        [
+            false,
+            true,
+            true,
+            true
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ]
+    ],
+    "gridColor": "white"
+}

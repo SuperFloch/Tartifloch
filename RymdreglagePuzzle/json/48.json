@@ -1,1 +1,40 @@
-{}
+{
+    "id": "48",
+    "name": "Chill Ambient Calm Music",
+    "number": "3469083026",
+    "snakeCode": "NDED",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "2",
+        "eye": "1",
+        "human": "1",
+        "mouth": "_"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "yellow"
+}

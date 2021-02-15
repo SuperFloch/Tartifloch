@@ -1,1 +1,40 @@
-{}
+{
+    "id": "55",
+    "name": "Space Outer Space Music",
+    "number": "3520935396",
+    "snakeCode": "QIJ",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "2",
+        "eye": "1",
+        "human": "0",
+        "mouth": "."
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            true,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "white"
+}

@@ -1,1 +1,40 @@
-{}
+{
+    "id": "11",
+    "name": "Space Cosmic Music",
+    "number": "2803504507",
+    "snakeCode": "GIGIB",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "1",
+        "eye": "1",
+        "human": "1",
+        "mouth": "_"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            true,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}

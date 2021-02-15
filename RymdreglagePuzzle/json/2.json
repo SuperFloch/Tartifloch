@@ -1,1 +1,39 @@
-{}
+{
+    "id": "2",
+    "name": "Relaxing Ambient Focus Music",
+    "number": "8183609003",
+    "snakeCode": "EKHFB",
+    "picture": {
+        "hat": "1",
+        "eye": "1",
+        "human": "1",
+        "mouth": "."
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            true,
+            true,
+            true
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}

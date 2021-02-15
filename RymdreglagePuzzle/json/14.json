@@ -1,1 +1,40 @@
-{}
+{
+    "id": "14",
+    "name": "Instrumental Dark Music",
+    "number": "6604433258",
+    "snakeCode": "PDH",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "8",
+        "eye": "1",
+        "human": "1",
+        "mouth": "_"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ],
+        [
+            false,
+            true,
+            true,
+            true
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}

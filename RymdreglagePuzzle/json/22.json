@@ -1,1 +1,40 @@
-{}
+{
+    "id": "22",
+    "name": "Cosmic Amospheric Music",
+    "number": "3639443745",
+    "snakeCode": "NIB",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "4",
+        "eye": "1",
+        "human": "1",
+        "mouth": "_"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ],
+        [
+            false,
+            true,
+            true,
+            true
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}

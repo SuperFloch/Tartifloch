@@ -1,1 +1,40 @@
-{}
+{
+    "id": "17",
+    "name": "Background Ambient Meditation Music",
+    "number": "3418994854",
+    "snakeCode": "NIB",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "0",
+        "eye": "0",
+        "human": "0",
+        "mouth": "/"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            true,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}

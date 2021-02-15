@@ -1,1 +1,39 @@
-{}
+{
+    "id": "3",
+    "name": "Ambience Meditation Background Music",
+    "number": "9448255379",
+    "snakeCode": "RIJFB",
+    "picture": {
+        "hat": "2",
+        "eye": "0",
+        "human": "0",
+        "mouth": "."
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            true,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}

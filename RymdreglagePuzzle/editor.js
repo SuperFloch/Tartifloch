@@ -24,6 +24,7 @@ window.onload = function() {
 		playlistInfo.name = document.getElementById("name").value;
 		playlistInfo.number = document.getElementById("number").value;
 		playlistInfo.snakeCode = document.getElementById("snakeCode").value.toUpperCase();
+		playlistInfo.numberUnderlined = document.getElementById("numberLined").checked;
 		
 		playlistInfo.picture = {};
 		playlistInfo.picture.hat = document.getElementById("hatSelect").value;
@@ -64,6 +65,7 @@ function fillForm(playlistInfo){
 	document.getElementById("name").value = playlistInfo.name;
 	document.getElementById("number").value = playlistInfo.number;
 	document.getElementById("snakeCode").value = playlistInfo.snakeCode;
+	document.getElementById("numberLined").checked = playlistInfo.numberUnderlined == true;
 	
 	if(playlistInfo.picture!=null){
 		document.getElementById("hatSelect").value = playlistInfo.picture.hat;

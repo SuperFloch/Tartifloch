@@ -1,1 +1,40 @@
-{}
+{
+    "id": "26",
+    "name": "Ambient Meditation",
+    "number": "6246436267",
+    "snakeCode": "HF",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "1",
+        "eye": "1",
+        "human": "1",
+        "mouth": "_"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            true,
+            true,
+            true
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}

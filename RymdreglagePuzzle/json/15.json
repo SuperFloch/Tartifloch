@@ -1,1 +1,40 @@
-{}
+{
+    "id": "15",
+    "name": "Ambient Meditation Reading Music",
+    "number": "2437205835",
+    "snakeCode": "GFED",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "16",
+        "eye": "0",
+        "human": "1",
+        "mouth": "_"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            true,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}

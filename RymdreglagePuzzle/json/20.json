@@ -1,1 +1,40 @@
-{}
+{
+    "id": "20",
+    "name": "Ambience Relaxing Stress Relief Music",
+    "number": "5178609040",
+    "snakeCode": "HIHFB",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "32",
+        "eye": "0",
+        "human": "0",
+        "mouth": "_"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ],
+        [
+            false,
+            true,
+            true,
+            true
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}

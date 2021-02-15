@@ -1,1 +1,39 @@
-{}
+{
+    "id": "5",
+    "name": "Chill Meditation Calm Music",
+    "number": "4697486762",
+    "snakeCode": "EKHFB",
+    "picture": {
+        "hat": "2",
+        "eye": "1",
+        "human": "0",
+        "mouth": "_"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}

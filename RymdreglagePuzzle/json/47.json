@@ -1,1 +1,40 @@
-{}
+{
+    "id": "47",
+    "name": "Instrumental Spa Music",
+    "number": "0990796547",
+    "snakeCode": "HIPD",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "1",
+        "eye": "0",
+        "human": "0",
+        "mouth": "."
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            true,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "cyan"
+}

@@ -1,1 +1,40 @@
-{}
+{
+    "id": "49",
+    "name": "Soundscape Background Music",
+    "number": "2901618766",
+    "snakeCode": "NFJD",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "16",
+        "eye": "0",
+        "human": "0",
+        "mouth": "."
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            true
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "white"
+}

@@ -1,1 +1,39 @@
-{}
+{
+    "id": "7",
+    "name": "Space Meditation Dark Music",
+    "number": "1609631859",
+    "snakeCode": "EI",
+    "picture": {
+        "hat": "64",
+        "eye": "1",
+        "human": "1",
+        "mouth": "_"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            true
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}

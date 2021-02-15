@@ -1,1 +1,40 @@
-{}
+{
+    "id": "44",
+    "name": "Chill Ambient Dreaming Music",
+    "number": "3017114448",
+    "snakeCode": "EI",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "64",
+        "eye": "0",
+        "human": "0",
+        "mouth": "_"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ],
+        [
+            false,
+            true,
+            true,
+            true
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ]
+    ],
+    "gridColor": "cyan"
+}

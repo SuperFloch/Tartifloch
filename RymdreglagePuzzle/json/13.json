@@ -1,1 +1,40 @@
-{}
+{
+    "id": "13",
+    "name": "Space Gaming Music",
+    "number": "2861829745",
+    "snakeCode": "RIJFB",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "4",
+        "eye": "0",
+        "human": "1",
+        "mouth": "/"
+    },
+    "gridCode": [
+        [
+            false,
+            true,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}

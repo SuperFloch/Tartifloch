@@ -1,1 +1,40 @@
-{}
+{
+    "id": "36",
+    "name": "Background Post Apocalyptic Music",
+    "number": "6407655904",
+    "snakeCode": "PDH",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "0",
+        "eye": "0",
+        "human": "0",
+        "mouth": "/"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ],
+        [
+            false,
+            true,
+            true,
+            true
+        ],
+        [
+            false,
+            false,
+            true,
+            false
+        ]
+    ],
+    "gridColor": "cyan"
+}

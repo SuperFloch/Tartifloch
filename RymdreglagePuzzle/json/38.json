@@ -1,1 +1,40 @@
-{}
+{
+    "id": "38",
+    "name": "Calm Outer Space Music",
+    "number": "1187267675",
+    "snakeCode": "LAG",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "2",
+        "eye": "0",
+        "human": "1",
+        "mouth": "/"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            true,
+            true,
+            true
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "cyan"
+}

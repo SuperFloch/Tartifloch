@@ -1,1 +1,40 @@
-{}
+{
+    "id": "35",
+    "name": "Deep Relaxation Ambient Music",
+    "number": "0560010165",
+    "snakeCode": "LFCD",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "64",
+        "eye": "1",
+        "human": "1",
+        "mouth": "_"
+    },
+    "gridCode": [
+        [
+            true,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "cyan"
+}

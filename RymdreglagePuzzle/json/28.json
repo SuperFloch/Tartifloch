@@ -1,1 +1,40 @@
-{}
+{
+    "id": "28",
+    "name": "Ambience Relaxing Dreaming Music",
+    "number": "9219222184",
+    "snakeCode": "HIHFB",
+    "numberUnderlined": false,
+    "picture": {
+        "hat": "4",
+        "eye": "1",
+        "human": "1",
+        "mouth": "/"
+    },
+    "gridCode": [
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ],
+        [
+            false,
+            true,
+            true,
+            true
+        ],
+        [
+            false,
+            false,
+            false,
+            false
+        ]
+    ],
+    "gridColor": "grey"
+}
