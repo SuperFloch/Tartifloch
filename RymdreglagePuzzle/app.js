@@ -16,6 +16,10 @@ app.get('/', function (req, res) {
 	res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/analyzer', function (req, res) {
+	res.sendFile(__dirname + '/analyzer.html');
+});
+
 app.post('/jsonUpdate/:playlist',function(req,res){
 	if(req.params.playlist != "Kedall"){
 		var url = './json/'+req.params.playlist+'.json';
