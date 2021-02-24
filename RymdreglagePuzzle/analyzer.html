@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<body>
+	
+		<button id="go">Analyze !</button>
+		<script>
+		var jsons = [];
+		window.onload = function(){
+		
+			for(var i = 1; i<= 56; i++){
+				readFile(i,function(data){
+					jsons.push(data);
+				});
+			}
+		}
+		
+		document.getElementById("go").onclick = function(){
+			var sorted = jsons.sort(function(a,b){return parseInt(a.id, 10) > parseInt(b.id,10)});
+			console.log(sorted);
+		};
+		
+		
+			function readFile(playListIndex,callback){
+				var myRequest = new XMLHttpRequest();
+				myRequest.open('GET', '/json/'+playListIndex);
+				myRequest.onreadystatechange = function () { 
+					if (myRequest.readyState === 4) {
+						var json = JSON.parse(myRequest.responseText);
+						callback(json);
+					}
+				};
+				myRequest.send();
+			}
+		</script>
+	</body>
+</html>
