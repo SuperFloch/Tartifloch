@@ -16,7 +16,18 @@
 		
 		document.getElementById("go").onclick = function(){
 			var sorted = jsons.sort(function(a,b){return parseInt(a.id, 10) > parseInt(b.id,10)});
-			console.log(sorted);
+			var words = {};
+			jsons.forEach(function(e){
+				var p = e.name.split(" ");
+				p.forEach(function(t){
+					var data = words[t];
+					if(data == null){
+						words[t] = 0;
+					}
+					words[t]+=1;
+				});
+			});
+			console.log(words);
 		};
 		
 		
