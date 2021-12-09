@@ -2,6 +2,7 @@ const https = require('https');
 const http = require('http');
 const bodyParser = require('body-parser');
 var cron = require('node-cron');
+var getPixels = require("get-pixels");
 
 // INTERFACE WEB
 var express = require('express');
@@ -10,7 +11,101 @@ var app = express(),
 server = require('http').createServer(app);
 app.use(express.static(__dirname));
 app.use(bodyParser.json({limit: '50mb'}));
-var fs = require('fs'); 
+var fs = require('fs');
+
+// ECRITURE initiale
+const FOLDER_COUNT = 1024;
+//fillJSON(1);
+//moveImages();
+function fillJSON(i){
+	var playlistNumber = fillWithZeros(i,4);
+	var path = './data/'+playlistNumber+'.json';
+	var playlistName = "";
+	
+	var playlistSongs = [];
+	var usbPath = "F:/"+playlistNumber+"/";
+	fs.readdir(usbPath, (err, files) => {
+		files = files.filter(f => f.includes(".mp3"));
+		files.sort(function(a,b){
+			return parseInt(a.substring(5,7),10) - parseInt(b.substring(5,7),10);
+		});
+		
+		var playListName = files[11].substring(8,files[11].length-4).split(" - ")[1];
+		
+		files.forEach(function(file,index){
+			var toRemove = (index+1)+" ";
+			var fileFullName = "";
+			if(file.includes(playListName)){
+				fileFullName = file.substring(5+toRemove.length,file.length-(7+playListName.length));
+			}else{
+				fileFullName = file.substring(5+toRemove.length,file.length-4);
+			}
+			
+			playlistSongs[index] = fileFullName;
+			
+		});
+		
+		
+		var jsonData = {
+			songs : playlistSongs,
+			id : i-1,
+			name : playListName,
+			img:{
+				number:"",
+				underlined:false,
+				snakeCode:"",
+				picture:{
+					hat:0,
+					eye:0,
+					human:0,
+					mouth:"_"
+				},
+				grid:{
+					color:"",
+					code:[
+							[0,0,0,0],
+							[0,0,0,0],
+							[0,0,0,0],
+							[0,0,0,0]
+						]
+				},
+				colors : [],
+				backgroundColor : ""
+			}
+		};
+		
+		//console.log(jsonData);
+		fs.writeFile(path, JSON.stringify(jsonData), { flag: 'wx' }, function (err) {
+			if (err) {
+				console.log(err);
+			}
+			if(i<FOLDER_COUNT){
+				fillJSON(i+1);
+			}
+		});
+		
+	});
+}
+
+function moveImages(){
+	for(var i=1;i<=FOLDER_COUNT;i++){
+		var srcPath = "F:/"+fillWithZeros(i,4)+"/"+fillWithZeros(i,4)+".jpg";
+		var destPath = "./Miniatures/"+fillWithZeros(i,4)+".jpg";
+		fs.copyFile( srcPath, destPath, (err) => {
+			if (err) {
+				console.log("Error Found:", err);
+			}
+		});
+	}
+}
+
+function fillWithZeros(inte,cCount){
+	var str = ""+inte;
+	while(str.length < cCount){
+		str = "0"+str;
+	}
+	return str;
+}
 
 app.get('/', function (req, res) {
 	res.sendFile(__dirname + '/index.html');
@@ -22,7 +117,8 @@ app.get('/analyzer', function (req, res) {
 
 app.post('/jsonUpdate/:playlist',function(req,res){
 	if(req.params.playlist != "Kedall"){
-		var url = './json/'+req.params.playlist+'.json';
+		console.log(fillWithZeros(req.params.playlist,4)+".json modifié !");
+		var url = './data/'+fillWithZeros(req.params.playlist,4)+'.json';
 		try {
 			fs.writeFileSync(url,JSON.stringify(req.body, null, 4),"utf8");
 			res.json({ success : true});
@@ -35,8 +131,10 @@ app.post('/jsonUpdate/:playlist',function(req,res){
 });
 
 
+
+
 app.get('/json/:playlist',function(req,res){
-	var url = './json/'+req.params.playlist+'.json';
+	var url = './data/'+fillWithZeros(req.params.playlist,4)+'.json';
 	var fileContents = fs.readFileSync(url);
 	var info = JSON.parse(fileContents);
 	

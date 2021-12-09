@@ -1,0 +1,54 @@
+{
+    "id": "2",
+    "img": {
+        "number": "",
+        "snakeCode": "",
+        "underlined": false,
+        "picture": {
+            "hat": "0",
+            "eye": "0",
+            "human": "0",
+            "mouth": "_"
+        },
+        "grid": {
+            "code": [
+                [
+                    "0",
+                    "0",
+                    "0",
+                    "0"
+                ],
+                [
+                    "0",
+                    "0",
+                    "0",
+                    "0"
+                ],
+                [
+                    "0",
+                    "1",
+                    "1",
+                    "1"
+                ],
+                [
+                    "0",
+                    "0",
+                    "0",
+                    "0"
+                ]
+            ],
+            "color": "#808080"
+        },
+        "colors": [
+            "#4ca575",
+            "#9e3591",
+            "#eb4367",
+            "#1a2fec",
+            "#9d7beb",
+            "#973534",
+            "#ecc17c"
+        ],
+        "backgroundColor": "#feff01"
+    },
+    "name": "Relaxing Ambient Focus Music"
+}

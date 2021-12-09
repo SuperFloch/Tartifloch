@@ -15,9 +15,13 @@
 		<div>
 			<div class="col col-70">
 				<h1>Cryppzle Solver 2000</h1>
-				<select id="playlistSelect">
-					<option value="Kedall">[Selectionnez un numéro de playlist]</option>
-				</select>
+				<div class="row">
+					<button id="previousButton">Previous</button>
+					<select id="playlistSelect">
+						<option value="Kedall">[Selectionnez un numéro de playlist]</option>
+					</select>
+					<button id="nextButton">Next</button>
+				</div>
 				
 				<div id="formulaire">
 				
@@ -89,18 +93,25 @@
 						<h2>gridCode</h2>
 						<div id="gridForm">
 							<div class="form">
-								<label for="gridColorSelect">Grid Color</label>
-								<select id="gridColorSelect">
-									<option value="grey">Grey</option>
-									<option value="green">Green</option>
-									<option value="yellow">Yellow</option>
-									<option value="cyan">Cyan</option>
-									<option value="white">White</option>
-								</select>
+								<label for="gridColor">Grid Color</label>
+								<input type="color" id="gridColor">
 							</div>
 							<table id="gridCode">
 							</table>
 						</div>
+					</div>
+					<div class="formBlock col col-10">
+						<h3>Couleur de fond</h3>
+						<input type="color" id="backgroundColor">
+						<hr>
+						<h3>Couleurs frise</h3>
+						<input type="color" id="color_1">
+						<input type="color" id="color_2">
+						<input type="color" id="color_3">
+						<input type="color" id="color_4">
+						<input type="color" id="color_5">
+						<input type="color" id="color_6">
+						<input type="color" id="color_7">
 					</div>
 					
 					<div id="colorForm">
@@ -114,7 +125,8 @@
 			</div>
 			<div id="infos" class="col col-30">
 				<div id="image">
-					<img id="miniaturePlaylist">
+					<canvas id="theCanvas" height=400 width=400></canvas>
+					<img id="miniaturePlaylist" hidden>
 				</div>
 			</div>
 		</div>
