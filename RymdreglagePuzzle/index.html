@@ -14,7 +14,7 @@
 		<script src="https://cdn.rawgit.com/naptha/tesseract.js/1.0.10/dist/tesseract.js"></script>
 		<script src="editor.js"></script>
 		<div>
-			<div class="col col-70">
+			<div class="col col-50">
 				<h1>Cryppzle Solver 2000</h1>
 				<div class="row">
 					<button id="previousButton">Previous</button>
@@ -26,7 +26,7 @@
 				
 				<div id="formulaire">
 				
-					<div class="formBlock col col-30">
+					<div class="formBlock col col-30" style="display:none">
 						<h2>General information</h2>
 						<div>
 							<div class="form col col-70">
@@ -36,6 +36,7 @@
 							<div class="form col col-10">
 								<label for="numberLined">Souligné</label>
 								<input type="checkbox" id="numberLined">
+								<input type="checkbox" id="idLined">
 							</div>
 						</div>
 						<div class="form">
@@ -90,7 +91,7 @@
 						</div>
 					</div>
 					
-					<div class="formBlock col col-30">
+					<div class="formBlock col col-30" style="display:none">
 						<h2>gridCode</h2>
 						<div id="gridForm">
 							<div class="form">
@@ -101,7 +102,7 @@
 							</table>
 						</div>
 					</div>
-					<div class="formBlock col col-10">
+					<div class="formBlock col col-10" style="display:none">
 						<h3>Couleur de fond</h3>
 						<input type="color" id="backgroundColor">
 						<hr>
@@ -118,8 +119,10 @@
 					<div id="colorForm">
 					</div>
 				</div>
-				
-				<button id="saveButton">Sauvegarder</button>
+				<center>
+					<button id="saveButton">Sauvegarder</button>
+					<div id="saveSuccess"></div>
+				</center>
 				
 				
 				
@@ -129,7 +132,6 @@
 					<canvas id="theCanvas" height=400 width=400></canvas>
 					<img id="miniaturePlaylist" hidden>
 					<canvas id="chifferCanvas" height=50 width=200></canvas>
-					<img id="chifferImg">
 				</div>
 			</div>
 		</div>

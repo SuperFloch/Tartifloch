@@ -1,14 +1,14 @@
 {
     "id": "2",
     "img": {
-        "number": "",
-        "snakeCode": "",
+        "number": "8183609003",
+        "snakeCode": "'| |.|'| '|.| |.| . ",
         "underlined": false,
         "picture": {
-            "hat": "0",
-            "eye": "0",
-            "human": "0",
-            "mouth": "_"
+            "hat": "1",
+            "eye": "1",
+            "human": "1",
+            "mouth": "."
         },
         "grid": {
             "code": [

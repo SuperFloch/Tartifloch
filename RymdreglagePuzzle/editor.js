@@ -38,6 +38,7 @@ window.onload = function() {
 	
 	var saveButton = document.getElementById("saveButton");
 	saveButton.onclick = function(){
+		document.getElementById("saveSuccess").innerHTML = "Sending";
 		var playlistInfo = {};
 		playlistInfo.id = document.getElementById("playlistSelect").value;
 		playlistInfo.img = {};
@@ -45,6 +46,7 @@ window.onload = function() {
 		playlistInfo.img.number = document.getElementById("number").value;
 		playlistInfo.img.snakeCode = document.getElementById("snakeCode").value.toUpperCase();
 		playlistInfo.img.underlined = document.getElementById("numberLined").checked;
+		playlistInfo.img.idUnderlined = document.getElementById("idLined").checked;
 		
 		playlistInfo.img.picture = {};
 		playlistInfo.img.picture.hat = document.getElementById("hatSelect").value;
@@ -184,6 +186,10 @@ function buildForm(playlistInfo){
 		var isUnderlined = ("#" + ("000000" + rgbToHex(linePoint[0], linePoint[1], linePoint[2])).slice(-6) == black);
 		document.getElementById("numberLined").checked = isUnderlined;
 		
+		var idLinePoint = ctx.getImageData(382,31, 1, 1).data;
+		var isIdUnderlined = ("#" + ("000000" + rgbToHex(idLinePoint[0], idLinePoint[1], idLinePoint[2])).slice(-6) == black);
+		document.getElementById("idLined").checked = isIdUnderlined;
+		
 		// Snake Code
 		var snakeCodeX = 3;
 		var snakeCodeYtop = 328;
@@ -234,14 +240,14 @@ function buildForm(playlistInfo){
 		var chifferImg = new Image();
 		chifferImg.id = "pic";
 		chifferImg.src = chifferCanvas.toDataURL();
-		document.getElementById("chifferImg").src = chifferImg.src;
+		//document.getElementById("chifferImg").src = chifferImg.src;
 
 		Tesseract.recognize(chifferImg.src, {
 			lang: 'fra'
 		})
 		.then(function(result){
 			var theNumber = result.text.split("\n")[0].split(" ").join("");
-			console.log(theNumber);
+			//console.log(theNumber);
 			document.getElementById("number").value = theNumber;
 		})
 	};
@@ -331,6 +337,7 @@ function sendInfo(playlistInfo){
 		if (myRequest.readyState === 4) {
 			var json = JSON.parse(myRequest.responseText);
 			console.log(json);
+			document.getElementById("saveSuccess").innerHTML = "Saved !";
 		}
 	};
 	myRequest.send(JSON.stringify(playlistInfo));
