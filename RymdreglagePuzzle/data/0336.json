@@ -4,6 +4,7 @@
         "number": "4711055785",
         "snakeCode": "'|.| |.| ",
         "underlined": false,
+        "idUnderlined": false,
         "picture": {
             "hat": "32",
             "eye": "1",

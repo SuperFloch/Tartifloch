@@ -2,8 +2,9 @@
     "id": "228",
     "img": {
         "number": "3105118548",
-        "snakeCode": "'|.|'|.| |.|' .|'| |.| . ",
+        "snakeCode": "'|.|'|..| |.|' .|'| |.| . ",
         "underlined": false,
+        "idUnderlined": false,
         "picture": {
             "hat": "8",
             "eye": "0",

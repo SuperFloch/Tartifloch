@@ -1,20 +1,33 @@
 <!DOCTYPE html>
 <html>
 	<body>
-	
+		<div>Loading : <span id="loadedCount"></span>/1024</div>
 		<button id="go">Analyze !</button>
+		
+		<h1>Observations</h1>
+		<ul>
+			<li>Il y a 32 images dont le numéro de gauche est souligné</li>
+			<li>Il y a 26 caractères "serpent" différents (Il y a une variante du '|_|'|_| ou le deuxième creux est plus long, mon algo ne l'a pas détécté du premier coup)</li>
+			<li>Il y a 12 couleurs de grille différentes</li>
+			<li>Toutes les combinaisons possibles d'yeux/humain/sourire/chapeau sont représentées, ça fait donc 96 combinaisons. Parfois une seule fois (149 et 725)</li>
+		</ul>
 		<script>
 		var jsons = [];
 		window.onload = function(){
 		
-			for(var i = 1; i<= 56; i++){
+			for(var i = 1; i<= 1024; i++){
 				readFile(i,function(data){
 					jsons.push(data);
+					document.getElementById("loadedCount").innerHTML = jsons.length;
 				});
 			}
 		}
 		
 		document.getElementById("go").onclick = function(){
+			console.log(jsons);
+			
+			console.log(getPhotosInfos(jsons));
+			/*	MOTS
 			var sorted = jsons.sort(function(a,b){return parseInt(a.id, 10) > parseInt(b.id,10)});
 			var words = {};
 			jsons.forEach(function(e){
@@ -28,9 +41,58 @@
 				});
 			});
 			console.log(words);
+			*/
+			
 		};
+		///////////////////////////////////
 		
+		function getUnderlinedImgs(jsons){
+			return jsons.filter(j => j.img.underlined);
+		}
 		
+		function getSnakeChars(jsons){
+			var chars = [];
+			jsons.forEach(function(j){
+				var snakeParts = j.img.snakeCode.split(" ");
+				snakeParts.forEach(function(p){
+					if(p != "" && !chars.find(c=>c==p)){
+						chars.push(p);
+					}
+				});
+			});
+			return chars.sort(function(a,b){
+				return a.length-b.length;
+			});
+		}
+		
+		function getGridColors(jsons){
+			var ret = [];
+			jsons.forEach(function(e){
+				if(!ret.find(c=>c==e.img.grid.color)){
+					ret.push(e.img.grid.color);
+				}
+			});
+			return ret;
+		}
+		
+		function getPhotosInfos(jsons){
+			var ret = [];
+			jsons.forEach(function(j){
+				var photoInfo = j.img.picture.eye+","+j.img.picture.hat+","+j.img.picture.human+","+j.img.picture.mouth;
+				var theInfo = ret.find(p=>p.code == photoInfo);
+				if(!theInfo){
+					ret.push({code:photoInfo, ids:[j.id] });
+				}else{
+					theInfo.ids.push(j.id);
+				}
+			});
+			
+			return ret.sort(function(a,b){
+				return parseInt(a.ids[0],10) - parseInt(b.ids[0],10);
+			});
+		}
+		
+		////////////////////////////////////////
 			function readFile(playListIndex,callback){
 				var myRequest = new XMLHttpRequest();
 				myRequest.open('GET', '/json/'+playListIndex);

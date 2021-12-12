@@ -38,39 +38,42 @@ window.onload = function() {
 	
 	var saveButton = document.getElementById("saveButton");
 	saveButton.onclick = function(){
-		document.getElementById("saveSuccess").innerHTML = "Sending";
-		var playlistInfo = {};
-		playlistInfo.id = document.getElementById("playlistSelect").value;
-		playlistInfo.img = {};
-		playlistInfo.name = document.getElementById("name").value;
-		playlistInfo.img.number = document.getElementById("number").value;
-		playlistInfo.img.snakeCode = document.getElementById("snakeCode").value.toUpperCase();
-		playlistInfo.img.underlined = document.getElementById("numberLined").checked;
-		playlistInfo.img.idUnderlined = document.getElementById("idLined").checked;
-		
-		playlistInfo.img.picture = {};
-		playlistInfo.img.picture.hat = document.getElementById("hatSelect").value;
-		playlistInfo.img.picture.eye = document.getElementById("eyeSelect").value;
-		playlistInfo.img.picture.human = document.getElementById("humanSelect").value;
-		playlistInfo.img.picture.mouth = document.getElementById("mouthSelect").value;
-		
-		playlistInfo.img.grid = {};
-		playlistInfo.img.grid.code = getGridCodeTableValue();
-		playlistInfo.img.grid.color = document.getElementById("gridColor").value;
-		
-		playlistInfo.img.colors = [];
-		for(var i =1;i<8;i++){
-			playlistInfo.img.colors.push(document.getElementById("color_"+i).value);
-		}
-		
-		playlistInfo.img.backgroundColor = document.getElementById("backgroundColor").value;
-		
-		sendInfo(playlistInfo);
+		save();
 	};
 };
 
+function save(callback){
+	document.getElementById("saveSuccess").innerHTML = "Sending";
+	var playlistInfo = {};
+	playlistInfo.id = document.getElementById("playlistSelect").value;
+	playlistInfo.img = {};
+	playlistInfo.name = document.getElementById("name").value;
+	playlistInfo.img.number = document.getElementById("number").value;
+	playlistInfo.img.snakeCode = document.getElementById("snakeCode").value.toUpperCase();
+	playlistInfo.img.underlined = document.getElementById("numberLined").checked;
+	playlistInfo.img.idUnderlined = document.getElementById("idLined").checked;
+	
+	playlistInfo.img.picture = {};
+	playlistInfo.img.picture.hat = document.getElementById("hatSelect").value;
+	playlistInfo.img.picture.eye = document.getElementById("eyeSelect").value;
+	playlistInfo.img.picture.human = document.getElementById("humanSelect").value;
+	playlistInfo.img.picture.mouth = document.getElementById("mouthSelect").value;
+	
+	playlistInfo.img.grid = {};
+	playlistInfo.img.grid.code = getGridCodeTableValue();
+	playlistInfo.img.grid.color = document.getElementById("gridColor").value;
+	
+	playlistInfo.img.colors = [];
+	for(var i =1;i<8;i++){
+		playlistInfo.img.colors.push(document.getElementById("color_"+i).value);
+	}
+	
+	playlistInfo.img.backgroundColor = document.getElementById("backgroundColor").value;
+	
+	sendInfo(playlistInfo,callback);
+}
 
-function buildForm(playlistInfo){
+function buildForm(playlistInfo,callback){
 	var playlistSelect = document.getElementById("playlistSelect");
 	
 	var idString = fillWithZeros(playlistSelect.value,4);
@@ -249,6 +252,11 @@ function buildForm(playlistInfo){
 			var theNumber = result.text.split("\n")[0].split(" ").join("");
 			//console.log(theNumber);
 			document.getElementById("number").value = theNumber;
+			/*
+			save(function(){
+				document.getElementById("nextButton").click();
+			});
+			*/
 		})
 	};
 	
@@ -256,13 +264,42 @@ function buildForm(playlistInfo){
 }
 
 function removeCusecontiveDuplicates(array){
-	var ret = [array[0]];
+	var ret = [""];
+	var consecutiveCount = 0;
 	for(var i=0;i<array.length;i++){
 		if(ret[ret.length-1] != array[i]){
+			if(isSpecialChar(ret.slice(0,ret.length-1)) && array[i] == " "){
+				ret = ret.slice(0,ret.length-1);
+			}
 			ret.push(array[i]);
+			consecutiveCount = 0;
+		}else{
+			//Exception pour le caractère spécial avec le deuxieme creux plus long
+			consecutiveCount++;
+			if(consecutiveCount>6 && array[i] == "." && isSpecialChar(ret)){
+				ret.push(array[i]);
+				consecutiveCount = 0;
+			}
 		}
+		//console.log(consecutiveCount);
 	}
 	return ret;
+}
+
+function isSpecialChar(currentSnakeCode){
+	// Special char is '|.|'|. .|
+	var isSpecial = false;
+	if(currentSnakeCode.length >= 6){
+		var snl = currentSnakeCode.length;
+		var currentChar = "";
+		for(var x=0;x<7;x++){
+			currentChar+=currentSnakeCode[snl-7+x];
+		}
+		if(currentChar == "'|.|'|."){
+			isSpecial = true;
+		}
+	}
+	return isSpecial;
 }
 
 function fillForm(playlistInfo){
@@ -329,7 +366,7 @@ function getGridCodeTableValue(){
 
 
 // CONNEXION AU JSON
-function sendInfo(playlistInfo){
+function sendInfo(playlistInfo,callback){
 	var myRequest = new XMLHttpRequest();
 	myRequest.open('POST', '/jsonUpdate/'+playlistInfo.id);
 	myRequest.setRequestHeader("Content-Type", "application/json");
@@ -338,6 +375,9 @@ function sendInfo(playlistInfo){
 			var json = JSON.parse(myRequest.responseText);
 			console.log(json);
 			document.getElementById("saveSuccess").innerHTML = "Saved !";
+			if(callback){
+				callback();
+			}
 		}
 	};
 	myRequest.send(JSON.stringify(playlistInfo));
