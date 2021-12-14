@@ -237,6 +237,17 @@ function buildForm(playlistInfo,callback){
 		var chifferCanvas = document.getElementById("chifferCanvas");
 		var chifferSubImg = ctx.getImageData(0, 0, 170, 30);
 		
+		// On place sur fond blanc
+		for (var i = 0; i < chifferSubImg.data.length; i += 4) {
+			//console.log("R:"+chifferSubImg.data[i]+" G:"+ chifferSubImg.data[i + 1]+" B:"+ chifferSubImg.data[i + 2]);
+			if (chifferSubImg.data[i] == 0 && chifferSubImg.data[i + 1] == 0 && chifferSubImg.data[i + 2] == 0) {
+			}else{
+				chifferSubImg.data[i] = 255;
+				chifferSubImg.data[i + 1] = 255;
+				chifferSubImg.data[i + 2] = 255;
+			}
+		}
+		
 		var chifferCtx = chifferCanvas.getContext("2d");
 		chifferCtx.putImageData(chifferSubImg, 0, 0);
 		
@@ -257,6 +268,7 @@ function buildForm(playlistInfo,callback){
 				document.getElementById("nextButton").click();
 			});
 			*/
+			
 		})
 	};
 	
@@ -268,7 +280,7 @@ function removeCusecontiveDuplicates(array){
 	var consecutiveCount = 0;
 	for(var i=0;i<array.length;i++){
 		if(ret[ret.length-1] != array[i]){
-			if(isSpecialChar(ret.slice(0,ret.length-1)) && array[i] == " "){
+			if(isSpecialChar(ret.slice(0,ret.length)) && array[i] == " "){
 				ret = ret.slice(0,ret.length-1);
 			}
 			ret.push(array[i]);

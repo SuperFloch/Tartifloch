@@ -17,9 +17,65 @@ var fs = require('fs');
 const FOLDER_COUNT = 1024;
 //fillJSON(1);
 //moveImages();
+
+//generateBigJSFile();
+
+app.get('/', function (req, res) {
+	res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/analyzer', function (req, res) {
+	res.sendFile(__dirname + '/analyzer.html');
+});
+
+app.post('/jsonUpdate/:playlist',function(req,res){
+	if(req.params.playlist != "Kedall"){
+		console.log(fillWithZeros(req.params.playlist,4)+".json modifié !");
+		var url = './data/'+fillWithZeros(req.params.playlist,4)+'.json';
+		try {
+			fs.writeFileSync(url,JSON.stringify(req.body, null, 4),"utf8");
+			res.json({ success : true});
+		} catch (err) {
+			res.json({ success : false});
+		}
+	} else{
+		res.json({ success : false});
+	}
+});
+
+app.get('/json/:playlist',function(req,res){
+	var url = './data/'+fillWithZeros(req.params.playlist,4)+'.json';
+	var fileContents = fs.readFileSync(url);
+	var info = JSON.parse(fileContents);
+	
+	res.json(info);
+});
+
+server.listen(8080);
+
+
+/*
+	TOOLS
+*/
+function generateBigJSFile(){
+	var bigData = {playlists:[]};
+	for(var i = 1; i<= FOLDER_COUNT;i++){
+		var url = './data/'+fillWithZeros(i,4)+'.json';
+		var fileContents = fs.readFileSync(url);
+		var imgInfo = JSON.parse(fileContents);
+		
+		url = './filesRefs/'+fillWithZeros(i,4)+'.json';
+		fileContents = fs.readFileSync(url);
+		var filesInfo = JSON.parse(fileContents);
+		imgInfo.songs = filesInfo.songs;
+		bigData.playlists.push(imgInfo);
+	}
+	fs.writeFileSync("everything.js","var data = "+JSON.stringify(bigData, null, 4),"utf8");
+}
+
 function fillJSON(i){
 	var playlistNumber = fillWithZeros(i,4);
-	var path = './data/'+playlistNumber+'.json';
+	var path = './filesRefs/'+playlistNumber+'.json';
 	var playlistName = "";
 	
 	var playlistSongs = [];
@@ -49,29 +105,7 @@ function fillJSON(i){
 		var jsonData = {
 			songs : playlistSongs,
 			id : i-1,
-			name : playListName,
-			img:{
-				number:"",
-				underlined:false,
-				snakeCode:"",
-				picture:{
-					hat:0,
-					eye:0,
-					human:0,
-					mouth:"_"
-				},
-				grid:{
-					color:"",
-					code:[
-							[0,0,0,0],
-							[0,0,0,0],
-							[0,0,0,0],
-							[0,0,0,0]
-						]
-				},
-				colors : [],
-				backgroundColor : ""
-			}
+			name : playListName
 		};
 		
 		//console.log(jsonData);
@@ -106,39 +140,3 @@ function fillWithZeros(inte,cCount){
 	}
 	return str;
 }
-
-app.get('/', function (req, res) {
-	res.sendFile(__dirname + '/index.html');
-});
-
-app.get('/analyzer', function (req, res) {
-	res.sendFile(__dirname + '/analyzer.html');
-});
-
-app.post('/jsonUpdate/:playlist',function(req,res){
-	if(req.params.playlist != "Kedall"){
-		console.log(fillWithZeros(req.params.playlist,4)+".json modifié !");
-		var url = './data/'+fillWithZeros(req.params.playlist,4)+'.json';
-		try {
-			fs.writeFileSync(url,JSON.stringify(req.body, null, 4),"utf8");
-			res.json({ success : true});
-		} catch (err) {
-			res.json({ success : false});
-		}
-	} else{
-		res.json({ success : false});
-	}
-});
-
-
-
-
-app.get('/json/:playlist',function(req,res){
-	var url = './data/'+fillWithZeros(req.params.playlist,4)+'.json';
-	var fileContents = fs.readFileSync(url);
-	var info = JSON.parse(fileContents);
-	
-	res.json(info);
-});
-
-server.listen(8080);

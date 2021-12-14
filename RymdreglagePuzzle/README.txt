@@ -1,5 +1,11 @@
 Toutes les miniatures des playlists dans le dossier Miniatures
 
+SnakeChars relous :
+
+3
+55
+779
+
 Miniatures avec un doute :
 
 83
