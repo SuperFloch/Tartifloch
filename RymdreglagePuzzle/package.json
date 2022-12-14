@@ -12,7 +12,7 @@
   "author": "Superfloch",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "get-pixels": "^3.3.3",
     "node-cron": "^2.0.3",
     "png-js": "^1.0.0"
