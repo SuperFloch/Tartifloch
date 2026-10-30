@@ -41,6 +41,25 @@ Objectif : aider l'utilisateur à trouver la solution du puzzle.
 - SnakeChars douteux (ambiguïté Q/R dans snakeCode) : ids 3, 55, 779.
 - Miniatures douteuses (hat/eye/mouth incertains, jamais "human") : 83, 150, 237*, 238*, 239*, 240*, 242*, 243*, 246*, 283*, 338, 355, 374*, 391, 503, 519, 570*, 602, 611*, 640, 651*, 712, 742*, 743, 751, 807, 821, 871, 932*, 951, 994, 999, 1011*, 1016 (* = yeux fermés). Constantes dans analyzeScript.js.
 
+## Découpage en blocs de 16 ids (fonctions blockSummary, blockHeaderSymbols, blockPatternSequence)
+Bloc k = ids 16k..16k+15 (id 16k = en-tête à grille pleine ; bloc 0 = ids 1-15, bloc 64 = id 1024 seul).
+- Motif de grille d'un bloc = 7 bits (ids pairs, 3 vs 5 cases) + 8 positions 0-7 (ids impairs). Il n'existe que **8 motifs distincts**, chacun présent **exactement 8 fois** sur les 64 blocs (8 x 8 = 64) ; les blocs 62 et 63 ont une variante du motif 6 (bits 1111000 au lieu de 1110000, probablement faute de lecture : 6+2 = 8). Motifs : 0=0101001/62631514, 1=0111001/27613523, 2=1100011/00326132, 3=1011001/71321677, 4=1010011/23044610, 5=0011101/21035570, 6=1110000/16207153, 7=0011010/10472373.
+- Suite des motifs par bloc (0 à 63) : 0123450536137610150207523637314430544667470152712043554272261766 (les deux derniers lus 8 -> 6).
+- Couleur de grille du corps du bloc : 8 couleurs (gris, cyan, blanc, magenta, jaune, rouge, vert, bleu) ; en-tête : surtout vert/jaune/rouge/bleu + quelques quasi-noirs (#060500 bloc 22, #34330e bloc 45, #fd0100 bloc 36, #fcfb19 bloc 57). Ni le motif ni la couleur d'en-tête ne déterminent la couleur du corps (aucune dépendance visible).
+- Fond : teinte = 60° + 3,75° x bloc (60° au bloc 0, 300° au bloc 64).
+- Longueur des séries : 8 jusqu'au bloc 45, 7 du bloc 45 à 62, 6 aux derniers blocs.
+- Nombres soulignés : un par bloc dans le dernier tiers (blocs 45-63, ids 727-1016), 1 à 2 par bloc.
+
+## Erreurs de saisie probables
+Liste des ids à vérifier : toCheck.txt (régénérer avec `node analyzeScript.js writeToCheck`, détection dans `findSuspects`). Catégories : nombre (img.number), grille (cases/couleur), motif de bloc rare, snakeCode vide/rare, soulignés irréguliers, mots de name uniques.
+
+## Audio
+- Je ne peux pas écouter : analyse par signal uniquement. Script : `python -I analyzeAudio.py "<fichier.mp3>" [dossier_sortie]` (ffmpeg + numpy ; spectrogramme + pics + bandes + modulations). Exemple dans audios/ (id 2, 210 s, mp3 128 kb/s 48 kHz stéréo).
+- Résultats sur cet exemple : drone / nappe ambient. Énergie surtout < 500 Hz, quasi rien > 8 kHz (aucun contenu ultrasonique), stéréo très large (corrélation L/R ~0,05). Pics dominants D#3 (157 Hz), F#2 (92), A#2 (117), D#2 (78), F#4 (371), A#4 (467) -> accord de ré dièse mineur. Raies harmoniques régulières, respiration lente (périodes ~35-42 s), quelques tenues autour de 4 kHz (~63-73 s et ~95-100 s). Compatible avec un son très étiré, mais rien de concluant.
+
+## Majuscules dans name (fonction capitalLetterCounts)
+A 651, B 147, C 379, D 158, E 25, F 103, G 26, H 1, I 92, M 1332, O 27, P 27, R 340, S 396, T 28, W 26 (seulement 16 lettres, total 3758 = toutes les initiales de mots). 12 mots sans majuscule : "for" x10, "to", "music". Fonction nameInitials pour les initiales par playlist.
+
 ## Notes sur les données et les images
 - Une partie des textes a été lue avec une vieille version de Tesseract.js : fautes de frappe probables dans img.number.
 - Les images ne sont pas toutes versionnées : seules les 56 premières sont dans Miniatures/ (0001.jpg ... 0056.jpg). On peut y vérifier visuellement une valeur douteuse.

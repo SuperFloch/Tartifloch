@@ -505,8 +505,192 @@ function idUnderlinedInfo() {
     return data.filter(p => p.img.idUnderlined).map(p => ({ id: +p.id, number: p.img.number }));
 }
 
+//----------------- MAJUSCULES
+
+// Occurrences de chaque lettre majuscule (A-Z) dans les name des images (ou "songs" : titres des chansons)
+function capitalLetterCounts(source) {
+    var texts = source == "songs" ? getAllSongs().map(s => s.title) : data.map(p => p.name);
+    var counts = {};
+    texts.join(" ").split("").forEach(c => {
+        if (c != c.toLowerCase() && c == c.toUpperCase()) counts[c] = (counts[c] || 0) + 1;
+    });
+    return Object.keys(counts).sort().map(k => ({ letter: k, count: counts[k] }));
+}
+// Mots d'un name qui ne commencent pas par une majuscule
+function nameWordsNotCapitalized() {
+    return nameWords().filter(w => w[0] == w[0].toLowerCase());
+}
+// Lettres initiales de chaque name (ex. "Ambient Meditation Music" -> "AMM") pour chaque playlist
+function nameInitials() {
+    return data.map(p => ({ id: p.id, initials: p.name.split(" ").map(w => w[0]).join("") }));
+}
+
+//----------------- DECOUPAGE EN BLOCS DE 16 (grille pleine à chaque id multiple de 16)
+
+// Bloc k = ids 16k .. 16k+15 (l'id 16k est l'"en-tête" à grille pleine ; bloc 0 = ids 1-15)
+function blockOf(id, size) {
+    return Math.floor(id / (size || 16));
+}
+function blockSummary(size) {
+    size = size || 16;
+    var blocks = {};
+    data.forEach(p => {
+        var b = blockOf(+p.id, size);
+        (blocks[b] = blocks[b] || []).push(p);
+    });
+    return Object.keys(blocks).map(k => {
+        var ps = blocks[k];
+        var header = ps.find(p => (+p.id) % size == 0);
+        var body = ps.filter(p => (+p.id) % size != 0);
+        return {
+            block: +k,
+            firstId: +ps[0].id,
+            headerGridColor: header ? header.img.grid.color : null,
+            bodyGridColors: body.map(p => p.img.grid.color).distinct().join("|"),
+            hats: body.map(p => p.img.picture.hat).distinct().length,
+            humans: body.map(p => p.img.picture.human).join(""),
+            snakeWords: body.map(p => snakeTokens(p).join(" ")).distinct().length,
+            underlined: ps.filter(p => p.img.underlined).map(p => p.id).join(","),
+            evenBits: body.filter(p => +p.id % 2 == 0).map(p => gridFilled(p) == 5 ? 1 : 0).join(""),
+            oddPos: body.filter(p => +p.id % 2 == 1).map(p => gridCells(p).findIndex(c => c != "0").toString(16)).join(""),
+            seriesLen: ps.map(p => p.songs.find(isNumberSeries).split("-").length).distinct().join("|"),
+            bgHue: rgbToHsl(hexToRgb(ps[0].img.backgroundColor))[0]
+        };
+    });
+}
+// Symboles de la grille pleine de chaque bloc (en-tête) : une ligne de 16 chiffres
+function blockHeaderSymbols(size) {
+    size = size || 16;
+    return data.filter(p => (+p.id) % size == 0).map(p => p.id + ":" + gridCells(p).join(""));
+}
+
+// Motif de grille d'un bloc (bits des ids pairs + positions des ids impairs) -> indice de motif ; suite des 64 blocs
+function blockPatternSequence() {
+    var patterns = {};
+    var seq = blockSummary(16).filter(b => b.block < 64).map(b => {
+        var key = b.evenBits + "/" + b.oddPos;
+        if (!(key in patterns)) patterns[key] = Object.keys(patterns).length;
+        return patterns[key];
+    });
+    return { patterns: patterns, sequence: seq.join(""), counts: getDistinctCounts(seq) };
+}
+
+//----------------- RECHERCHE D'ERREURS DE SAISIE (génère toCheck.txt)
+
+// Renvoie { catégorie: [{ id, detail }] } avec les ids suspects
+function findSuspects() {
+    var res = {};
+    var add = (cat, id, detail) => { (res[cat] = res[cat] || []).push({ id: +id, detail: detail }); };
+
+    // 1. img.number (haut gauche) : doit faire 10 chiffres
+    data.forEach(p => {
+        if (!/^\d{10}$/.test(p.img.number)) add("number", p.id, "lu \"" + p.img.number + "\" (" + p.img.number.length + " car.)");
+    });
+    // nombres identiques sur plusieurs ids
+    var byNum = {};
+    data.forEach(p => { (byNum[p.img.number] = byNum[p.img.number] || []).push(p.id); });
+    Object.keys(byNum).filter(n => byNum[n].length > 1 && /^\d{10}$/.test(n)).forEach(n =>
+        byNum[n].forEach(id => add("numberDuplicate", id, "même nombre " + n + " que ids " + byNum[n].join(",")))
+    );
+
+    // 2. grille : cases remplies inattendues
+    data.forEach(p => {
+        var f = gridFilled(p), n = +p.id;
+        if (n % 16 == 0 && f != 16) add("gridFilled", p.id, "multiple de 16 : " + f + " cases remplies au lieu de 16");
+        if (n % 16 != 0 && n % 2 == 0 && f == 1) add("gridFilled", p.id, "id pair avec 1 seule case (attendu 3 ou 5)");
+        if (n % 16 != 0 && n % 2 == 1 && f != 1) add("gridFilled", p.id, "id impair avec " + f + " cases (attendu 1)");
+        if (n % 16 != 0 && n % 2 == 1 && f == 1 && gridCells(p).findIndex(c => c != "0") > 7) add("gridFilled", p.id, "case unique hors positions 0-7");
+    });
+    // blocs dont le motif n'est pas un des 8 motifs attendus (comparaison sur ids pairs/impairs)
+    var rows = blockSummary(16).filter(b => b.block < 64);
+    var keyCount = {};
+    rows.forEach(b => { var k = b.evenBits + "/" + b.oddPos; keyCount[k] = (keyCount[k] || 0) + 1; });
+    rows.forEach(b => {
+        var k = b.evenBits + "/" + b.oddPos;
+        if (keyCount[k] < 4) add("blockPattern", b.firstId, "bloc " + b.block + " (ids " + (b.block * 16) + "-" + (b.block * 16 + 15) + ") motif rare " + k + " (seulement " + keyCount[k] + " bloc(s) ainsi)");
+    });
+
+    // 3. couleur de grille : id dont la couleur diffère du reste de son bloc
+    var blocks = {};
+    data.forEach(p => { if (+p.id % 16 != 0) (blocks[blockOf(+p.id)] = blocks[blockOf(+p.id)] || []).push(p); });
+    Object.keys(blocks).forEach(b => {
+        var counts = getDistinctCounts(blocks[b].map(p => p.img.grid.color));
+        var majority = Object.keys(counts).sort((x, y) => counts[y] - counts[x])[0];
+        blocks[b].forEach(p => { if (p.img.grid.color != majority) add("gridColor", p.id, p.img.grid.color + " au lieu de " + majority + " (couleur du reste du bloc)"); });
+    });
+    data.filter(p => +p.id % 16 == 0 && !["#00ff01", "#ffff00", "#fe0000", "#0000fe"].includes(p.img.grid.color))
+        .forEach(p => add("gridColorHeader", p.id, "couleur d'en-tête atypique " + p.img.grid.color));
+
+    // 4. snakeCode vide
+    data.filter(p => snakeTokens(p).length == 0).forEach(p => add("snakeEmpty", p.id, "snakeCode vide"));
+    // snakeCode : caractère rare (effectif <= 3) = possible erreur de lecture
+    var freq = {};
+    snakeCharFrequency().forEach(c => freq[c.value] = c.count);
+    data.forEach(p => snakeTokens(p).forEach(c => { if (freq[c] <= 3) add("snakeRare", p.id, "caractère serpent \"" + c + "\" rare (" + freq[c] + " occurrence(s))"); }));
+
+    // 5. séries chiffrées : longueur attendue selon l'id (8 jusqu'à 729, 7 jusqu'à 1009, 6 ensuite ; ids 1-based = index + 1)
+    data.forEach((p, i) => {
+        var len = p.songs.find(isNumberSeries).split("-").length;
+        var expected = i <= 729 ? 8 : i <= 1009 ? 7 : 6;
+        if (len != expected) add("seriesLength", p.id, "série de " + len + " nombres (attendu " + expected + ")");
+    });
+
+    // 6. name : mots uniques (probables erreurs d'OCR) ; minuscules
+    var wc = getDistinctCounts(nameWords());
+    data.forEach(p => {
+        p.name.split(" ").forEach(w => {
+            if (wc[w] == 1) add("nameRareWord", p.id, "mot unique \"" + w + "\" dans \"" + p.name + "\"");
+        });
+        if (!/Music$/.test(p.name)) add("nameNoMusic", p.id, "ne finit pas par Music : \"" + p.name + "\"");
+    });
+
+    // 7. nombres soulignés : écarts irréguliers sur la fin (régulier ~12,3)
+    var ul = underlinedNumbers().map(u => u.id);
+    ul.forEach((id, i) => {
+        if (i > 6 && i < ul.length - 1) {
+            var a = id - ul[i - 1], b = ul[i + 1] - id;
+            if (a <= 10 || a >= 14 || b <= 10 || b >= 14) add("underlinedGap", id, "écart avec voisins soulignés : " + a + " puis " + b);
+        }
+    });
+    return res;
+}
+
+// Écrit toCheck.txt à partir de findSuspects() (node analyzeScript.js writeToCheck)
+function writeToCheck() {
+    var s = findSuspects();
+    var sections = [
+        ["number", "PRIORITE HAUTE - Nombre en haut à gauche (img.number) : attendu 10 chiffres. Relire le nombre sur l'image et corriger (OCR Tesseract ancien)."],
+        ["gridFilled", "PRIORITE HAUTE - Grille 4x4 : relire les cases remplies. Attendu : id impair = 1 case (position 0-7), id pair = 3 cases (ligne centrale) ou 5 cases (croix), multiple de 16 = 16 cases."],
+        ["blockPattern", "PRIORITE HAUTE - Bloc de 16 ids dont le motif de grille ne correspond qu'à 2 blocs sur 64 (les autres motifs existent 8 fois chacun). Vérifier les grilles paires du bloc (3 ou 5 cases) : le motif attendu est 1110000/16207153."],
+        ["gridColor", "PRIORITE MOYENNE - Couleur de fond de la grille différente du reste de son bloc de 16."],
+        ["gridColorHeader", "PRIORITE MOYENNE - Couleur de grille d'un id multiple de 16 qui n'est ni vert, jaune, rouge ni bleu purs (vérifier si c'est une vraie couleur, par ex. noir)."],
+        ["snakeEmpty", "PRIORITE MOYENNE - snakeCode vide (échec du script de décodage) : relire le code serpent sur l'image."],
+        ["snakeRare", "PRIORITE BASSE - Caractère serpent n'apparaissant que 2 fois (peut être une vraie lettre rare ou une erreur de lecture)."],
+        ["underlinedGap", "PRIORITE BASSE - Nombre souligné dont l'écart avec les voisins soulignés est irrégulier (attendu ~12 ; un souligné oublié ou en trop ?). Vérifier ces ids et leurs voisins 10-14 ids autour."],
+        ["nameRareWord", "PRIORITE BASSE - Mot du titre (name) qui n'apparaît qu'une fois (vraie rareté ou faute d'OCR)."]
+    ];
+    var out = ["A VERIFIER (généré par analyzeScript.js writeToCheck)", "Les images 0001 à 0056 sont dans Miniatures/. Format : id - ce qu'il faut vérifier", ""];
+    sections.forEach(sec => {
+        var items = (s[sec[0]] || []).filter(x => !(sec[0] == "underlinedGap" && x.id == 727));
+        if (!items.length) return;
+        out.push("== " + sec[1] + " (" + items.length + ")");
+        items.forEach(x => out.push(x.id + " - " + x.detail));
+        out.push("");
+    });
+    require("fs").writeFileSync("toCheck.txt", out.join("\n"), "utf8");
+    return "toCheck.txt écrit";
+}
+
 //----------------- TABLE CLI (node analyzeScript.js <nom> [args])
 var CLI = {
+    writeToCheck: () => writeToCheck(),
+    findSuspects: () => findSuspects(),
+    blockPatternSequence: () => blockPatternSequence(),
+    blockSummary: (s) => blockSummary(s),
+    blockHeaderSymbols: (s) => blockHeaderSymbols(s),
+    capitalLetterCounts: (s) => capitalLetterCounts(s),
+    nameWordsNotCapitalized: () => nameWordsNotCapitalized(),
+    nameInitials: () => nameInitials(),
     gridBinary: () => gridBinary(),
     gridDecodeSimple: () => gridDecodeSimple(),
     gridSequences: () => gridSequences(),
