@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Puzzle des grilles</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; background: #222; color: #eee; display: flex; gap: 16px; padding: 12px; }
+  #side { width: 250px; flex: none; }
+  #side button, #side label { display: block; width: 100%; margin: 0 0 8px; }
+  #side button { padding: 8px; cursor: pointer; font-size: 14px; }
+  #wrap { position: relative; width: min(92vh, calc(100vw - 300px)); aspect-ratio: 1; flex: none; }
+  #board { display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); width: 100%; height: 100%; background: #000; }
+  .tile { position: relative; cursor: grab; user-select: none; outline: 1px solid #000; outline-offset: -1px; }
+  .tile svg { width: 100%; height: 100%; display: block; pointer-events: none; }
+  .tile .lab { position: absolute; left: 2px; top: 2px; background: rgba(0,0,0,.8); color: #fff; font: bold 12px Arial; padding: 1px 3px; pointer-events: none; }
+  .tile.sel { outline: 4px solid #fff; outline-offset: -4px; z-index: 2; }
+  .tile.over { outline: 4px dashed #fff; outline-offset: -4px; }
+  .tile.moved .lab { background: #c60; }
+  #marks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  #stat { font-size: 13px; line-height: 1.5; margin-bottom: 10px; }
+  #msg { font-size: 12px; color: #9c9; min-height: 2.4em; }
+  h1 { font-size: 17px; margin: 0 0 8px; }
+  .row { display: flex; gap: 6px; } .row button { flex: 1; }
+</style>
+</head>
+<body>
+<div id="side">
+  <h1>Puzzle des 64 grilles</h1>
+  <div id="stat"></div>
+  <button id="save">Enregistrer les positions</button>
+  <div class="row"><button id="rotL">⟲ Tourner</button><button id="rotR">⟳ Tourner</button><button id="flip">Miroir</button></div>
+  <button id="undo">Annuler la dernière action</button>
+  <button id="download">Télécharger positions.json</button>
+  <button id="load">Charger un fichier positions.json</button>
+  <button id="reset">Remettre l'ordre des ids</button>
+  <label><input type="checkbox" id="chkLabels" checked> Afficher les ids</label>
+  <label><input type="checkbox" id="chkMarks" checked> Marquer les raccords incohérents</label>
+  <label><input type="checkbox" id="chkColors" checked> Couleurs de fond</label>
+  <div id="msg"></div>
+  <p style="font-size:12px;color:#aaa">Glisser une pièce sur une autre pour les intervertir (ou cliquer une pièce puis une autre). Pièce sélectionnée : boutons Tourner / Miroir, ou touches R (tourner), F (miroir), double-clic (tourner). Sauvegarde automatique dans le navigateur ; « Enregistrer » écrit aussi positions.json si le serveur (node server.js) tourne. Étiquette orange = pièce déplacée ou tournée. Pour voir une solution du solveur : « Charger » solution_rot.json.</p>
+  <input type="file" id="file" accept=".json" hidden>
+</div>
+<div id="wrap"><div id="board"></div><svg id="marks" viewBox="0 0 1152 1152" preserveAspectRatio="none"></svg></div>
+<script src="data.js"></script>
+<script>
+const N = 8, KEY = "puzzle-state", S = 36;
+const SYM = { 1: "", 2: "ud", 3: "lr", 4: "ul", 5: "ld", 6: "dr", 7: "ur", 8: "udlr", u: "u", d: "d", l: "l", r: "r", 0: "" };
+const ROT = { u: "r", r: "d", d: "l", l: "u" }, MIR = { u: "u", d: "d", l: "r", r: "l" };
+const VEC = { u: [0, -1], d: [0, 1], l: [-1, 0], r: [1, 0] };
+const mapDirs = (s, m) => [...s].map(c => m[c]).join("");
+const byId = {}; TILES.forEach(t => byId[t.id] = t);
+const initial = TILES.map(t => t.id);
+let pos = initial.slice();          // pos[i] = id de la pièce à la position i (ligne par ligne)
+let rot = Array(64).fill(0);        // orientation : miroir*4 + quarts de tour horaires (miroir horizontal d'abord)
+let history = [], sel = -1, server = false;
+
+// grille de directions d'une pièce dans l'orientation o (identique à solver.js)
+const memo = {};
+function oriented(id, o) {
+  const k = id + ":" + o; if (memo[k]) return memo[k];
+  let g = byId[id].grid.map(r => r.map(x => SYM[x] || ""));
+  if (o >= 4) g = g.map(r => r.map(s => mapDirs(s, MIR)).reverse());
+  for (let q = 0; q < o % 4; q++) { const n = [[], [], [], []]; for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) n[c][3 - r] = mapDirs(g[r][c], ROT); g = n; }
+  return memo[k] = { id, color: byId[id].color, dirs: g };
+}
+const at = i => oriented(pos[i], rot[i]);
+const has = (t, r, c, d) => t.dirs[r][c].includes(d);
+
+function tileSVG(t) {
+  let b = `<rect width="144" height="144" fill="${t.color}" class="bg"/>`;
+  for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) {
+    const s = t.dirs[r][c], cx = c * S + S / 2, cy = r * S + S / 2;
+    if (!s) continue;
+    let d = ""; for (const k of s) d += `M${cx},${cy}L${cx + VEC[k][0] * S / 2},${cy + VEC[k][1] * S / 2}`;
+    b += `<path d="${d}" stroke="#000" stroke-width="11" stroke-linecap="${s.length === 1 ? "round" : "square"}" fill="none"/>`;
+  }
+  return `<svg viewBox="0 0 144 144">${b}</svg>`;
+}
+
+const board = document.getElementById("board");
+function build() {
+  board.innerHTML = "";
+  for (let i = 0; i < 64; i++) {
+    const d = document.createElement("div");
+    d.className = "tile"; d.draggable = true; d.dataset.i = i;
+    d.addEventListener("dragstart", e => { e.dataTransfer.setData("text/plain", i); });
+    d.addEventListener("dragover", e => { e.preventDefault(); d.classList.add("over"); });
+    d.addEventListener("dragleave", () => d.classList.remove("over"));
+    d.addEventListener("drop", e => { e.preventDefault(); d.classList.remove("over"); const a = +e.dataTransfer.getData("text/plain"); if (a !== i) swap(a, i); });
+    d.addEventListener("click", () => { if (sel < 0) { sel = i; } else { const a = sel; sel = -1; if (a !== i) swap(a, i); } render(); });
+    d.addEventListener("dblclick", () => { sel = i; turn(1); });
+    board.appendChild(d);
+  }
+}
+
+function render() {
+  const showLab = chkLabels.checked, showCol = chkColors.checked;
+  [...board.children].forEach((d, i) => {
+    const t = at(i);
+    d.innerHTML = tileSVG(t) + (showLab ? `<span class="lab">${t.id}${rot[i] ? " r" + rot[i] : ""}</span>` : "");
+    if (!showCol) d.querySelector(".bg").setAttribute("fill", "#fff");
+    d.classList.toggle("sel", sel === i);
+    d.classList.toggle("moved", pos[i] !== initial[i] || rot[i] !== 0);
+  });
+  marks();
+}
+
+// raccords : pour chaque bord entre deux pièces voisines, compare les traits qui traversent ; les sorties vers l'extérieur comptent aussi
+function marks() {
+  let ok = 0, bad = 0, out = "", ext = 0;
+  const G = 144;
+  for (let i = 0; i < 64; i++) {
+    const r = Math.floor(i / N), c = i % N, t = at(i);
+    if (c < N - 1) { const u = at(i + 1);
+      for (let k = 0; k < 4; k++) { const a = has(t, k, 3, "r"), b = has(u, k, 0, "l");
+        if (a === b) ok++; else { bad++; out += `<rect x="${(c + 1) * G - 5}" y="${r * G + k * S + 6}" width="10" height="${S - 12}" fill="#f0f" stroke="#fff"/>`; } } }
+    if (r < N - 1) { const u = at(i + N);
+      for (let k = 0; k < 4; k++) { const a = has(t, 3, k, "d"), b = has(u, 0, k, "u");
+        if (a === b) ok++; else { bad++; out += `<rect x="${c * G + k * S + 6}" y="${(r + 1) * G - 5}" width="${S - 12}" height="10" fill="#f0f" stroke="#fff"/>`; } } }
+    const edge = (cond, k, x, y, w, h, has_) => { if (cond && has_) { ext++; out += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#0ff" stroke="#000"/>`; } };
+    for (let k = 0; k < 4; k++) {
+      edge(r === 0, k, c * G + k * S + 6, 0, S - 12, 8, has(t, 0, k, "u"));
+      edge(r === N - 1, k, c * G + k * S + 6, N * G - 8, S - 12, 8, has(t, 3, k, "d"));
+      edge(c === 0, k, 0, r * G + k * S + 6, 8, S - 12, has(t, k, 0, "l"));
+      edge(c === N - 1, k, N * G - 8, r * G + k * S + 6, 8, S - 12, has(t, k, 3, "r"));
+    }
+  }
+  document.getElementById("marks").innerHTML = chkMarks.checked ? out : "";
+  const moved = pos.filter((id, i) => id !== initial[i] || rot[i] !== 0).length;
+  document.getElementById("stat").innerHTML = `Raccords cohérents : <b>${ok}</b> / ${ok + bad}<br>Incohérents (magenta) : <b>${bad}</b><br>Sorties vers l'extérieur (cyan) : <b>${ext}</b><br>Pièces déplacées/tournées : ${moved}`;
+}
+
+const snapshot = () => ({ pos: pos.slice(), rot: rot.slice() });
+function swap(a, b, record = true) {
+  if (record) history.push(snapshot());
+  [pos[a], pos[b]] = [pos[b], pos[a]]; [rot[a], rot[b]] = [rot[b], rot[a]];
+  persistLocal(); render();
+}
+function turn(n) {
+  if (sel < 0) return say("Sélectionne d'abord une pièce.");
+  history.push(snapshot()); rot[sel] = (rot[sel] & 4) | (((rot[sel] & 3) + (n > 0 ? 1 : 3)) & 3); persistLocal(); render();
+}
+function flip() {
+  if (sel < 0) return say("Sélectionne d'abord une pièce.");
+  history.push(snapshot()); rot[sel] ^= 4; persistLocal(); render();
+}
+
+function payload() { return JSON.stringify({ saved: new Date().toISOString(), size: N, positions: pos, rotations: rot }, null, 1); }
+function persistLocal() { try { localStorage.setItem(KEY, JSON.stringify({ pos, rot })); } catch (e) {} }
+function say(m) { document.getElementById("msg").textContent = m; }
+const valid = (arr) => Array.isArray(arr) && arr.length === 64 && new Set(arr).size === 64 && arr.every(id => byId[id]);
+function apply(p, r) {
+  if (!valid(p)) { say("Fichier invalide (64 ids de grilles attendus)."); return false; }
+  history.push(snapshot()); pos = p.slice(); rot = Array.isArray(r) && r.length === 64 ? r.map(x => x | 0) : Array(64).fill(0); persistLocal(); render(); return true;
+}
+
+document.getElementById("save").onclick = async () => {
+  persistLocal();
+  try { const r = await fetch("/api/positions", { method: "POST", body: payload() }); if (r.ok) return say("Enregistré dans positions.json (" + new Date().toLocaleTimeString() + ")."); } catch (e) {}
+  say("Serveur non lancé : positions gardées dans le navigateur. Lance « node server.js » ou utilise Télécharger.");
+};
+document.getElementById("undo").onclick = () => { const h = history.pop(); if (h) { pos = h.pos; rot = h.rot; persistLocal(); render(); } };
+document.getElementById("reset").onclick = () => { if (confirm("Remettre l'ordre des ids (sans rotation) ?")) { history.push(snapshot()); pos = initial.slice(); rot = Array(64).fill(0); persistLocal(); render(); } };
+document.getElementById("rotL").onclick = () => turn(-1);
+document.getElementById("rotR").onclick = () => turn(1);
+document.getElementById("flip").onclick = flip;
+document.addEventListener("keydown", e => { if (e.key === "r" || e.key === "R") turn(1); if (e.key === "f" || e.key === "F") flip(); });
+document.getElementById("download").onclick = () => {
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([payload()], { type: "application/json" })); a.download = "positions.json"; a.click();
+};
+document.getElementById("load").onclick = () => document.getElementById("file").click();
+document.getElementById("file").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { const j = JSON.parse(t); if (apply(j.positions, j.rotations)) say("Fichier chargé."); } catch (x) { say("Fichier illisible."); } }); e.target.value = ""; };
+["chkLabels", "chkMarks", "chkColors"].forEach(id => document.getElementById(id).onchange = render);
+
+(async function init() {
+  build();
+  try {
+    const r = await fetch("/api/positions");
+    if (r.ok) { const j = await r.json(); if (valid(j.positions)) { pos = j.positions; rot = Array.isArray(j.rotations) && j.rotations.length === 64 ? j.rotations.map(x => x | 0) : Array(64).fill(0); server = true; say("Positions chargées depuis positions.json."); } else server = true; }
+    else if (r.status === 404) server = true;
+  } catch (e) {}
+  if (!server || pos.join() === initial.join()) {
+    try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && valid(s.pos) && Array.isArray(s.rot) && s.rot.length === 64) { pos = s.pos; rot = s.rot; } } catch (e) {}
+  }
+  render();
+})();
+</script>
+</body>
+</html>

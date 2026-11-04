@@ -1,6 +1,7 @@
 var fs = require('fs');
 
 var data = null;
+var corrections = { verified: {} };
 
 fs.readFile('./everything.json', function read(err, data) {
     if (err) {
@@ -11,6 +12,7 @@ fs.readFile('./everything.json', function read(err, data) {
 
 function processFile(json) {
     data = JSON.parse(json).playlists;
+    applyCorrections();
 
     // Usage : node analyzeScript.js <nomFonction> [args JSON...]   (ex: node analyzeScript.js countLastNames 10)
     var fn = process.argv[2];
@@ -39,6 +41,22 @@ function processFile(json) {
     console.log(uniqueTranslated.length);
     console.log(uniqueTranslated);
     */
+}
+
+// Applique corrections.json (valeurs vérifiées sur les images) aux données chargées en mémoire
+function applyCorrections() {
+    var c = JSON.parse(fs.readFileSync('./corrections.json').toString());
+    corrections = c;
+    var byId = {};
+    data.forEach(p => { byId[+p.id] = p; });
+    Object.keys(c.numbers || {}).forEach(id => { byId[id].img.number = c.numbers[id]; });
+    Object.keys(c.snakeCodes || {}).forEach(id => { byId[id].img.snakeCode = c.snakeCodes[id]; });
+    Object.keys(c.snakeTokenFixes || {}).forEach(id => {
+        var fix = c.snakeTokenFixes[id], p = byId[id];
+        p.img.snakeCode = p.img.snakeCode.split(" ").map(t => t == fix[0] ? fix[1] : t).join(" ");
+    });
+    Object.keys(c.gridColors || {}).forEach(id => { byId[id].img.grid.color = c.gridColors[id]; });
+    Object.keys(c.gridCells || {}).forEach(id => { byId[id].img.grid.code = c.gridCells[id]; });
 }
 
 function translateSnakeCodes(codes) {
@@ -227,6 +245,15 @@ function snakeTokens(p) {
 // Fréquence de chaque caractère serpent (trié décroissant)
 function snakeCharFrequency() {
     return sortedCounts(data.map(snakeTokens).flat());
+}
+
+// Pour chaque caractère serpent : nombre d'occurrences et ids (liste complète si count <= maxCount)
+function snakeTokenIds(maxCount) {
+    maxCount = maxCount || 20;
+    var map = {};
+    data.forEach(p => snakeTokens(p).forEach(t => (map[t] = map[t] || []).push(p.id)));
+    return Object.keys(map).map(t => ({ token: t, count: map[t].length, ids: map[t].length <= maxCount ? map[t] : undefined }))
+        .sort((a, b) => a.count - b.count);
 }
 
 // Table de substitution fréquentielle vers un alphabet donné (par défaut anglais ETAOIN...)
@@ -443,6 +470,31 @@ function idsWithGridFilled(n) {
     return data.filter(p => p.img.grid.code.flat().filter(c => c != "0").length == n).map(p => p.id);
 }
 // Ids dont la grille n'est pas grise (#808080) avec leur couleur
+// Cartographie des couleurs de grille : suites d'ids consécutifs de même couleur (après corrections)
+function gridColorRuns() {
+    var runs = [];
+    data.forEach(p => {
+        var last = runs[runs.length - 1], c = p.img.grid.color.toLowerCase(), id = parseInt(p.id);
+        if (last && last.color == c) { last.to = id; last.count++; }
+        else runs.push({ color: c, from: id, to: id, count: 1 });
+    });
+    return runs;
+}
+
+// Par bloc de 16 : couleur d'en-tête (id 16k), couleur(s) du corps, et séparation en sous-suites
+function gridColorBlocks() {
+    var out = [];
+    for (var k = 0; k <= 64; k++) {
+        var ps = data.filter(p => Math.floor(parseInt(p.id) / 16) == k);
+        if (!ps.length) continue;
+        var head = k * 16 >= 1 && ps[0].id == String(k * 16) ? ps[0].img.grid.color.toLowerCase() : "";
+        var body = {};
+        ps.filter(p => parseInt(p.id) % 16 != 0).forEach(p => { var c = p.img.grid.color.toLowerCase(); body[c] = (body[c] || 0) + 1; });
+        out.push({ block: k, head: head, body: body });
+    }
+    return out;
+}
+
 function idsWithColoredGrid() {
     return data.filter(p => p.img.grid.color != "#808080").map(p => p.id + ":" + p.img.grid.color);
 }
@@ -580,7 +632,11 @@ function blockPatternSequence() {
 // Renvoie { catégorie: [{ id, detail }] } avec les ids suspects
 function findSuspects() {
     var res = {};
-    var add = (cat, id, detail) => { (res[cat] = res[cat] || []).push({ id: +id, detail: detail }); };
+    var add = (cat, id, detail) => {
+        var v = (corrections.verified || {})[cat]; // ids déjà vérifiés à la main (corrections.json) : ignorés
+        if (v == "*" || (v && v.includes(+id))) return;
+        (res[cat] = res[cat] || []).push({ id: +id, detail: detail });
+    };
 
     // 1. img.number (haut gauche) : doit faire 10 chiffres
     data.forEach(p => {
@@ -697,6 +753,9 @@ var CLI = {
     fullGridSymbols: () => fullGridSymbols(),
     underlinedNumbers: () => underlinedNumbers(),
     underlinedIdsDiffs: () => underlinedIdsDiffs(),
+    snakeTokenIds: (n) => snakeTokenIds(n),
+    gridColorRuns: () => gridColorRuns(),
+    gridColorBlocks: () => gridColorBlocks(),
     underlinedDigitStats: () => underlinedDigitStats(),
     oddImgNumbers: () => oddImgNumbers(),
     idUnderlinedInfo: () => idUnderlinedInfo(),
